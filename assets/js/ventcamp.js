@@ -587,7 +587,7 @@ Ventcamp = {
                     relativeOffset,
                     balloons,
                     mapOptions = {
-                        zoom: 14,
+                        zoom: 17,
                         scrollwheel: false,
                         mapTypeControl: false
                     };
@@ -600,7 +600,7 @@ Ventcamp = {
                     marker = new google.maps.Marker({
                         map: map,
                         icon: icon,
-                        position: markerLatLng
+                        position: (14.7045893,-17.4765063)
                     });
 
                     map.addListener('projection_changed', function() {
@@ -619,7 +619,7 @@ Ventcamp = {
 
                             if ( typeof balloon == 'string' ) {
                                 service.textSearch({
-                                    location: markerLatLng,
+                                    location: (14.7045893,-17.4765063),
                                     radius: 5000,
                                     query: balloon
                                 }, function(results, status) {
@@ -671,85 +671,67 @@ Ventcamp = {
                     }
                 }
 
-                function centerMap(map, offsetX, offsetY, relative) {
-                    var offsetX = (typeof offsetX == 'number' ? offsetX : 0),
-                        offsetY = (typeof offsetY == 'number' ? offsetY : 0),
-                        zoom = map.getZoom(),
-                        scale = Math.pow( 2, zoom ),
-                        northEast = map.getBounds().getNorthEast(),
-                        southWest = map.getBounds().getSouthWest(),
-                        width = Math.abs( northEast.lng() - southWest.lng() ),
-                        height = Math.abs( northEast.lat() - southWest.lat() ),
-                        point1 = map.getProjection().fromLatLngToPoint( map.getCenter() ),
-                        point2 = new google.maps.Point(
-                            offsetX / scale,
-                            offsetY / scale
-                        ),
-                        centerPoint = new google.maps.Point(
-                            point1.x - point2.x,
-                            point1.y - point2.y
-                        ),
-                        center = map.getProjection().fromPointToLatLng( centerPoint );
+                function centerMap(map) {
 
-                    if ( relative ) {
-                        center = new google.maps.LatLng(
-                            map.getCenter().lat() + height * offsetY / 100,
-                            map.getCenter().lng() - width * offsetX / 100
-                        );
-                    }
 
-                    map.setCenter( center );
+
+
+                        center = new google.maps.LatLng(14.7045841,-17.4765063);
+
+
+                    map.setCenter(center);
                 }
 
-                function successCallback (data) {
-                    if ( typeof data == 'object' ) {
-                        if ( data.mapZoom ) mapOptions.zoom = data.mapZoom;
+                function successCallback () {
 
-                        if ( data.relativeOffset ) relativeOffset = true;
+                      mapOptions.zoom = 16;
 
-                        if ( data.offsetX ) offsetX = data.offsetX;
-                        else offsetX = 0;
+                      relativeOffset = true;
 
-                        if ( data.offsetY ) offsetY = data.offsetY;
-                        else offsetY = 0;
+                        offsetX = 0;
 
-                        if ( data.markerImagePath && typeof data.markerImagePath == 'string' ) icon = data.markerImagePath;
+                        offsetY = 0;
 
-                        if ( data.markerAddress && typeof data.markerAddress == 'string' ) address = data.markerAddress;
-                        else if ( data.markerLatLng && typeof data.markerLatLng == 'object' ) markerLatLng = new google.maps.LatLng(data.markerLatLng[0], data.markerLatLng[1]);
+                        icon = "../assets/img/marker.png";
 
-                        if ( data.balloons && typeof data.balloons == 'object' && data.balloons.length ) balloons = data.balloons;
-                    }
+                        markerLatLng = new google.maps.LatLng(14.7045841,-17.4765063);
+
+
+
 
                     geocoder = new google.maps.Geocoder();
 
-                    if ( typeof markerLatLng == 'object' ) {
-                        createMap();
 
-                    }else if ( typeof address == 'string' ) {
-                        geocoder.geocode({ 'address': address }, function(results, status) {
-                            markerLatLng = results[0].geometry.location;
+
 
                             createMap();
-                        });
-                    }
-                }
+                        };
 
                 function failCallback () {
-                    _this.log("Can't parse map settings!");
+                    // _this.log("Can't parse map settings!");
 
-                    new google.maps.Map(mapEl, {
-                        center: new google.maps.LatLng(0, 0),
-                        zoom: 2
+                  var map=  new google.maps.Map(mapEl, {
+                        center: new google.maps.LatLng(14.7045841,-17.4765063),
+                        zoom: 16,
+                        scrollwheel:false,
+                        draggable:false
+
                     });
+
+                    var marker = new google.maps.Marker({
+                      position: {lat: 14.7042332,lng:-17.474399},
+                      map: map,
+                      icon:"./assets/img/marker.png",
+                      title: 'Foundation Konrad Adenauer, Dakar'
+                    });
+                    marker.setMap(map);
+
+
                 }
 
-                if ( $(this).data('settings') ) {
-                    $.getJSON($(this).data('settings'), successCallback).fail(failCallback);
 
-                }else {
                     failCallback();
-                }
+
             });
         }
     },
